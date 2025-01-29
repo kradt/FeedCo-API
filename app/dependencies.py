@@ -7,6 +7,7 @@ from fastapi import HTTPException, Depends, Cookie
 from fastapi.security import SecurityScopes
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app import models, pwd_context, oauth_scheme, config, SessionLocal
 from app.schemas.token import TokenData
@@ -29,11 +30,15 @@ def create_user(user: UserCreate,
     :param user: scheme with user data like password and username
     :return: user from base
     """
-    if db.query(models.User).filter_by(username=user.username).first():
+    if db.query(models.User).filter(
+            or_(models.User.username==user.username,
+                models.User.email==user.email)).first():
        raise HTTPException(status_code=400, detail="User already exists")
     user_in_base = models.User(
         username=user.username,
-        password=pwd_context.hash(user.password)
+        password=pwd_context.hash(user.password),
+        email=user.email,
+        account_type=user.account_type
     )
     db.add(user_in_base)
     db.commit()

@@ -1,6 +1,7 @@
 import datetime
+from enum import Enum as PyEnum
 
-from sqlalchemy import ForeignKey, TypeDecorator, DateTime
+from sqlalchemy import ForeignKey, TypeDecorator, DateTime, String, Enum
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
 from app import pwd_context
 
@@ -9,11 +10,19 @@ class Base(DeclarativeBase):
     pass
 
 
+class AccountType(PyEnum):
+    startup = "startup"
+    tester = "tester"
+
+
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-    password: Mapped[str] = mapped_column()
+    email: Mapped[str] = mapped_column(nullable=False)
+    username: Mapped[str] = mapped_column(unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(String(200), nullable=True)
+    account_type: Mapped[str] = mapped_column(Enum(AccountType), default=AccountType.tester)
 
     refresh_keys: Mapped[list["RefreshToken"]] = relationship(back_populates="user")
 
