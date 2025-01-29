@@ -75,18 +75,19 @@ def save_refresh_token(
     db.commit()
 
 
-def create_token_set(db: Session, user: models.User):
+def create_token_set(db: Session, user: models.User, scopes: list[str]):
     """
     Create refresh and access token and return them as pydantic model
+    :param scopes: permissions
     :param db: session to interact with database
     :param user: specific user object
     :return: TokenSet
     """
     access_token = create_access_token(
-        dict(token_type=config.ACCESS_TOKEN_TYPE, user_id=user.id)
+        dict(token_type=config.ACCESS_TOKEN_TYPE, user_id=user.id, scopes=scopes)
     )
     refresh_token = create_refresh_token(
-        dict(token_type=config.REFRESH_TOKEN_TYPE, user_id=user.id)
+        dict(token_type=config.REFRESH_TOKEN_TYPE, user_id=user.id, scopes=scopes)
     )
     save_refresh_token(db, refresh_token, user, datetime.timedelta(config.REFRESH_TOKEN_EXPIRE_DAYS))
     return TokenSet(access_token=access_token, refresh_token=refresh_token)

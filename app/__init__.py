@@ -23,4 +23,8 @@ engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
 SessionLocal = sessionmaker(bind=engine)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+scopes = {
+    "me": "Get info about current user"
+}
+oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", scopes=scopes)

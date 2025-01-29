@@ -28,7 +28,7 @@ async def get_auth_tokens(response: Response,
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Incorrect username of password")
-    token_set = create_token_set(db, user)
+    token_set = create_token_set(db, user, scopes=form_data.scopes)
     response.set_cookie(
         key="refresh_token",
         value=token_set.refresh_token,
