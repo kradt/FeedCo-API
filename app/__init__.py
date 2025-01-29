@@ -25,6 +25,7 @@ SessionLocal = sessionmaker(bind=engine)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 scopes = {
-    "me": "Get info about current user"
+    "me": "Get info about current user",
+    "users": "Get info about users"
 }
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", scopes=scopes)

@@ -3,7 +3,7 @@ from typing import Annotated
 
 import jwt
 from jwt.exceptions import InvalidTokenError
-from fastapi import HTTPException, Depends, Cookie
+from fastapi import HTTPException, Depends, Cookie, Query, Path
 from fastapi.security import SecurityScopes
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
@@ -11,7 +11,8 @@ from sqlalchemy import or_
 
 from app import models, pwd_context, oauth_scheme, config, SessionLocal
 from app.schemas.token import TokenData
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, BaseUser, UserSearch
+from app.services.user import get_user_by_id
 
 
 async def get_db():
@@ -20,6 +21,23 @@ async def get_db():
        yield db
     finally:
        db.close()
+
+def get_users(db: Annotated[Session, Depends(get_db)],
+             queryset: Annotated[UserSearch, Query()]):
+    query = db.query(models.User).filter_by(deleted=False)
+    if queryset.username:
+        query = query.filter(models.User.username.like(f"%{queryset.username}%"))
+    if queryset.email:
+        query = query.filter(models.User.email.like(f"%{queryset.email}%"))
+    if queryset.account_type:
+        query = query.filter(models.User.account_type == queryset.account_type)
+    if queryset.description:
+        query = query.filter(models.User.description.like(f"%{queryset.description}%"))
+    return query.all()
+
+
+def get_user(db: Annotated[Session, Depends(get_db)], user_id: Annotated[str, Path()]):
+    return get_user_by_id(db, user_id)
 
 
 def create_user(user: UserCreate,

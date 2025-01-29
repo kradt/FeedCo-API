@@ -22,6 +22,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(String(200), nullable=True)
+    deleted: Mapped[bool] = mapped_column(default=False)
     account_type: Mapped[str] = mapped_column(Enum(AccountType), default=AccountType.tester)
 
     refresh_keys: Mapped[list["RefreshToken"]] = relationship(back_populates="user")
