@@ -10,6 +10,7 @@ class BaseConfig(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str
     ACCESS_TOKEN_TYPE: str = "access"
     REFRESH_TOKEN_TYPE: str = "refresh"
+    SHOW_DOCUMENTATION: bool = False
     model_config = SettingsConfigDict(env_file="../.env")
 
 

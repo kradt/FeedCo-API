@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from app import models, pwd_context, oauth_scheme, config, SessionLocal
+from app.schemas.application import ApplicationSearch
 from app.schemas.token import TokenData
-from app.schemas.user import UserCreate, BaseUser, UserSearch
+from app.schemas.user import UserCreate, UserSearch
 from app.services.user import get_user_by_id
 
 
@@ -21,6 +22,19 @@ async def get_db():
        yield db
     finally:
        db.close()
+
+
+def get_applications(db: Annotated[Session, Depends(get_db)],
+                     queryset: Annotated[ApplicationSearch, Query()]):
+    query = db.query(models.Application).filter_by(deleted=False)
+    if queryset.name:
+        query = query.filter(models.Application.name.like(f"%{queryset.name}%"))
+    if queryset.description:
+        query = query.filter(models.Application.description.like(f"%{queryset.description}%"))
+    if queryset.user_id:
+        query = query.filter_by(user_id=queryset.user_id)
+    return query.all()
+
 
 def get_users(db: Annotated[Session, Depends(get_db)],
              queryset: Annotated[UserSearch, Query()]):

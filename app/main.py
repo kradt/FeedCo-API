@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, user
+from app.routers import auth, user, application
 from app import config, engine, models
 
 models.Base.metadata.create_all(bind=engine)
@@ -35,7 +35,8 @@ app = FastAPI(
         "url": "https://t.me/robertpustota",
         "email": "kradworkmail@gmail.com"
     },
-    openapi_tags=tags_metadata
+    openapi_tags=tags_metadata,
+    openapi_url="/docs/" if config.SHOW_DOCUMENTATION else None
 )
 
 app.add_middleware(
@@ -48,3 +49,4 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(user.router)
+app.include_router(application.router)
