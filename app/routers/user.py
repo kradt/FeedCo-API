@@ -8,7 +8,7 @@ from app.dependencies import get_current_user, get_users, get_user, get_db
 from app.schemas.user import UserResponse, UserUpdate
 from app.services.user import delete_user_by_id, update_user_by_id
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/", response_model=list[UserResponse])

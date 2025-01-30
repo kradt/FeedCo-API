@@ -11,7 +11,7 @@ from app import models
 from app.services.auth import authenticate_user, create_token_set
 from app.services.user import get_user_by_id
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/login/", response_model=TokenSet)

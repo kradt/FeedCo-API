@@ -13,6 +13,20 @@ async def lifespan(app_instance: FastAPI):
     yield
 
 
+tags_metadata = [
+    {
+        "name": "Auth",
+        "description": "Routes for managing user authentication and authorization"
+    },
+    {
+        "name": "Users",
+        "description": "Routes for operations with users"
+    },
+    {
+        "name": "Applications",
+        "description": "Routes for operations with applications"
+    }
+]
 app = FastAPI(
     lifespan=lifespan,
     title=config.API_NAME,
@@ -20,7 +34,8 @@ app = FastAPI(
         "name": "Robert Pustota",
         "url": "https://t.me/robertpustota",
         "email": "kradworkmail@gmail.com"
-    }
+    },
+    openapi_tags=tags_metadata
 )
 
 app.add_middleware(
