@@ -3,71 +3,16 @@ from typing import Annotated
 
 import jwt
 from jwt.exceptions import InvalidTokenError
-from fastapi import HTTPException, Depends, Cookie, Query, Path
+from fastapi import HTTPException, Depends, Cookie
 from fastapi.security import SecurityScopes
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
 
-from src import models, pwd_context, oauth_scheme, config
-from src.applications.schemas import ApplicationSearch
+from src import oauth_scheme, config
 from src.auth.schemas import TokenData
 from src.dependencies import get_db
-from src.users.schemas import UserCreate, UserSearch
-from src.users.service import get_user_by_id
-
-
-def get_applications(db: Annotated[Session, Depends(get_db)],
-                     queryset: Annotated[ApplicationSearch, Query()]):
-    query = db.query(models.Application).filter_by(deleted=False)
-    if queryset.name:
-        query = query.filter(models.Application.name.like(f"%{queryset.name}%"))
-    if queryset.description:
-        query = query.filter(models.Application.description.like(f"%{queryset.description}%"))
-    if queryset.user_id:
-        query = query.filter_by(user_id=queryset.user_id)
-    return query.all()
-
-
-def get_users(db: Annotated[Session, Depends(get_db)],
-             queryset: Annotated[UserSearch, Query()]):
-    query = db.query(models.User).filter_by(deleted=False)
-    if queryset.username:
-        query = query.filter(models.User.username.like(f"%{queryset.username}%"))
-    if queryset.email:
-        query = query.filter(models.User.email.like(f"%{queryset.email}%"))
-    if queryset.account_type:
-        query = query.filter(models.User.account_type == queryset.account_type)
-    if queryset.description:
-        query = query.filter(models.User.description.like(f"%{queryset.description}%"))
-    return query.all()
-
-
-def get_user(db: Annotated[Session, Depends(get_db)], user_id: Annotated[str, Path()]):
-    return get_user_by_id(db, user_id)
-
-
-def create_user(user: UserCreate,
-                db: Annotated[Session, Depends(get_db)]):
-    """
-    Create user and save it to base
-    :param db: session to interact with db
-    :param user: scheme with user data like password and username
-    :return: user from base
-    """
-    if db.query(models.User).filter(
-            or_(models.User.username==user.username,
-                models.User.email==user.email)).first():
-       raise HTTPException(status_code=400, detail="User already exists")
-    user_in_base = models.User(
-        username=user.username,
-        password=pwd_context.hash(user.password),
-        email=user.email,
-        account_type=user.account_type
-    )
-    db.add(user_in_base)
-    db.commit()
-    return user
+from src.users import service as user_service
+from src.auth import service
 
 
 def get_current_user(security_scopes: SecurityScopes,
@@ -95,7 +40,7 @@ def get_current_user(security_scopes: SecurityScopes,
         raise cred_exceptions
     except ValidationError:
         raise cred_exceptions
-    user = db.query(models.User).filter_by(id=token_data.user_id).first()
+    user = user_service.get(db, token_data.user_id)
     if not user:
         raise cred_exceptions
     # If it is not access token, raise an exception
@@ -128,7 +73,7 @@ def get_refresh_token(db: Annotated[Session, Depends(get_db)],
         raise refresh_token_exception
     if decoded_refresh_token.get("token_type") != config.REFRESH_TOKEN_TYPE:
         raise refresh_token_exception
-    token_from_base = db.query(models.RefreshToken).filter_by(token=refresh_token).first()
+    token_from_base = service.get_refresh_token_by_token_string(db, refresh_token)
     if not token_from_base:
         raise refresh_token_exception
     elif token_from_base.revoked:

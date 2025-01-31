@@ -4,12 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from src.auth.dependencies import create_user, get_refresh_token, get_db
+from src.auth.dependencies import get_refresh_token, get_db
 from src.auth.schemas import TokenSet
-from src.users.schemas import BaseUser
-from src import models
 from src.auth.service import authenticate_user, create_token_set
-from src.users.service import get_user_by_id
+from src.users import service as user_service
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -44,7 +42,7 @@ async def refresh_tokens(response: Response,
     According to specification we should recreate access and refresh tokens both during refreshing
     :return: TokenSet
     """
-    user = get_user_by_id(db, decoded_refresh_token.get("user_id"))
+    user = user_service.get(db, decoded_refresh_token.get("user_id"))
     if not user:
         raise HTTPException(status_code=401, detail="Invalid Credentials. User does not exist")
     token_set = create_token_set(db, user)
@@ -53,13 +51,3 @@ async def refresh_tokens(response: Response,
         value=token_set.refresh_token,
         httponly=True)
     return token_set
-
-
-@router.post("/create-user/", response_model=BaseUser)
-async def create_user(user: Annotated[models.User, Depends(create_user)]):
-    """
-    Registrate user or raise and error if user already exists
-    :param user: created user from base
-    :return: json with user data
-    """
-    return user

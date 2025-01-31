@@ -46,7 +46,8 @@ def create_access_token(data: dict, expires_at=datetime.timedelta(minutes=config
 def create_refresh_token(data: dict, expires_at=datetime.timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)):
     return create_jwt(data, expires_at=expires_at)
 
-def get_refresh_token_by_token(db: Session, token):
+
+def get_refresh_token_by_token_string(db: Session, token):
     return db.query(models.RefreshToken).filter_by(token=token).first()
 
 

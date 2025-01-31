@@ -11,4 +11,3 @@ class TokenData(BaseModel):
     user_id: int
     token_type: str
     scopes: list[str] | None = None
-
