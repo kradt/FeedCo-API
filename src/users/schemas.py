@@ -18,7 +18,7 @@ class UserCreate(BaseUser):
     password: str
 
 
-class UserSearch(UserFull):
+class UserSearch(BaseUser):
     username: str | None = None
     email: str | None = None
     account_type: AccountType | None = None
@@ -28,4 +28,3 @@ class UserUpdate(BaseModel):
     username: str | None = None
     email: EmailStr | None = None
     description: constr(max_length=200) | None = None
-
