@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from passlib.context import CryptContext
 
-from app.settings import DevelopmentConfig, ProductionConfig, BaseConfig
+from src.settings import DevelopmentConfig, ProductionConfig, BaseConfig
 
 load_dotenv()
 config_mode = os.getenv("CONFIG_MODE", "PRODUCTION")
@@ -26,6 +26,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 scopes = {
     "me": "Get info about current user",
-    "users": "Get info about users"
+    "users": "Get info about users",
+    "applications": "Get info about applications"
 }
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", scopes=scopes)

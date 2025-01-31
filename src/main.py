@@ -2,10 +2,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, user, application
-from app import config, engine, models
 
-models.Base.metadata.create_all(bind=engine)
+from src import config, engine, models
+from src.applications import router as applications
+from src.users import router as users
+from src.auth import router as auth
+
 
 @asynccontextmanager
 async def lifespan(app_instance: FastAPI):
@@ -48,5 +50,5 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(application.router)
+app.include_router(users.router)
+app.include_router(applications.router)

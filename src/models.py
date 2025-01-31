@@ -3,7 +3,7 @@ from enum import Enum as PyEnum
 
 from sqlalchemy import ForeignKey, TypeDecorator, DateTime, String, Enum
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, relationship
-from app import pwd_context
+from src import pwd_context
 
 
 class Base(DeclarativeBase):
@@ -47,7 +47,9 @@ class User(Base):
     applications: Mapped[list["Application"]] = relationship(back_populates="user")
     reviews: Mapped[list["Review"]] = relationship(back_populates="user")
     reviews_votes: Mapped[list["ReviewVotes"]] = relationship(back_populates="user")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="user")
     comments_votes: Mapped[list["CommentVotes"]] = relationship(back_populates="user")
+    ratings: Mapped[list["Rating"]] = relationship(back_populates="user")
 
     def check_password_hash(self, password: str):
         return pwd_context.verify(password, self.password)
@@ -97,6 +99,7 @@ class Application(Base):
     :param description: In description startups should describe for what their project is used for
     :param date_created: date when application was placed on forum
     :param hide_reviews: if true, only startups will be able to read the reviews
+    :param deleted: if true it mean that user deleted application
     """
     __tablename__ = "applications"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -104,6 +107,7 @@ class Application(Base):
     description: Mapped[str] = mapped_column(String(1000))
     date_created: Mapped[datetime.datetime] = mapped_column()
     hide_reviews: Mapped[bool] = mapped_column()
+    deleted: Mapped[bool] = mapped_column()
     # TODO: adding logo
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped[User] = relationship(back_populates="applications")
@@ -124,10 +128,10 @@ class Review(Base):
     date_created: Mapped[datetime.datetime] = mapped_column()
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped[User] = relationship(back_populates="applications")
+    user: Mapped[User] = relationship(back_populates="reviews")
 
     rating: Mapped["Rating"] = relationship(back_populates="review")
-    votes: Mapped["ReviewVotes"] = relationship(back_populates="review")
+    reviews_votes: Mapped["ReviewVotes"] = relationship(back_populates="review")
     comments: Mapped["Comment"] = relationship(back_populates="review")
 
 
@@ -142,10 +146,10 @@ class ReviewVotes(Base):
     vote_type: Mapped[bool] = mapped_column()
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped[User] = relationship(back_populates="votes")
+    user: Mapped[User] = relationship(back_populates="reviews_votes")
 
     review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"))
-    review: Mapped[Review] = relationship(back_populates="votes")
+    review: Mapped[Review] = relationship(back_populates="reviews_votes")
 
 
 class Rating(Base):

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, constr, EmailStr
 
-from app.models import AccountType
+from src.models import AccountType
 
 
 class BaseUser(BaseModel):
@@ -9,7 +9,8 @@ class BaseUser(BaseModel):
     account_type: AccountType
 
 
-class UserResponse(BaseUser):
+class UserFull(BaseUser):
+    id: int
     description: constr(max_length=200) | None = None
 
 
@@ -17,7 +18,7 @@ class UserCreate(BaseUser):
     password: str
 
 
-class UserSearch(UserResponse):
+class UserSearch(UserFull):
     username: str | None = None
     email: str | None = None
     account_type: AccountType | None = None

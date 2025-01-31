@@ -1,29 +1,29 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Security, Body
+from fastapi import APIRouter, Depends, Security
 from sqlalchemy.orm import Session
 
-from app import models
-from app.dependencies import get_current_user, get_users, get_user, get_db
-from app.schemas.user import UserResponse, UserUpdate
-from app.services.user import delete_user_by_id, update_user_by_id
+from src import models
+from src.auth.dependencies import get_current_user, get_users, get_user, get_db
+from src.users.schemas import UserFull, UserUpdate
+from src.users.service import delete_user_by_id, update_user_by_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/", response_model=list[UserResponse])
+@router.get("/", response_model=list[UserFull])
 async def get_all_users(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
                         users: Annotated[models.User, Depends(get_users)]):
     return users
 
 
-@router.get("/{user_id}", response_model=UserResponse | None)
+@router.get("/{user_id}", response_model=UserFull | None)
 async def get_user_by_id_in_base(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
                            requested_user: Annotated[models.User, Depends(get_user)]):
     return requested_user
 
 
-@router.get("/me/", response_model=UserResponse)
+@router.get("/me/", response_model=UserFull)
 async def get_me(current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])]):
     return current_user
 
@@ -34,7 +34,7 @@ async def delete_account(db: Annotated[Session, Depends(get_db)],
     delete_user_by_id(db, current_user.id)
 
 
-@router.patch("/me/", response_model=UserResponse)
+@router.patch("/me/", response_model=UserFull)
 async def update_account(db: Annotated[Session, Depends(get_db)],
                          current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])],
                          updated_user: UserUpdate):

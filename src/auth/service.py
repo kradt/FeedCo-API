@@ -3,8 +3,8 @@ import datetime
 import jwt
 from sqlalchemy.orm import Session
 
-from app import models, config
-from app.schemas.token import TokenSet
+from src import models, config
+from src.auth.schemas import TokenSet
 
 
 def authenticate_user(db: Session, username: str, password: str, ):
@@ -45,6 +45,9 @@ def create_access_token(data: dict, expires_at=datetime.timedelta(minutes=config
 
 def create_refresh_token(data: dict, expires_at=datetime.timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)):
     return create_jwt(data, expires_at=expires_at)
+
+def get_refresh_token_by_token(db: Session, token):
+    return db.query(models.RefreshToken).filter_by(token=token).first()
 
 
 def save_refresh_token(

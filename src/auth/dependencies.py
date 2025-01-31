@@ -9,19 +9,12 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from app import models, pwd_context, oauth_scheme, config, SessionLocal
-from app.schemas.application import ApplicationSearch
-from app.schemas.token import TokenData
-from app.schemas.user import UserCreate, UserSearch
-from app.services.user import get_user_by_id
-
-
-async def get_db():
-    db = SessionLocal()
-    try:
-       yield db
-    finally:
-       db.close()
+from src import models, pwd_context, oauth_scheme, config
+from src.applications.schemas import ApplicationSearch
+from src.auth.schemas import TokenData
+from src.dependencies import get_db
+from src.users.schemas import UserCreate, UserSearch
+from src.users.service import get_user_by_id
 
 
 def get_applications(db: Annotated[Session, Depends(get_db)],
