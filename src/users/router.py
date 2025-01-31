@@ -30,7 +30,7 @@ async def get_all_users(current_user: Annotated[models.User, Security(get_curren
 
 
 @router.get("/{user_id}", response_model=UserFull | None)
-async def get_user_by_id_in_base(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
+async def get_user(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
                                  requested_user: Annotated[models.User, Depends(get_user_by_id)]):
     return requested_user
 
@@ -41,13 +41,13 @@ async def get_me(current_user: Annotated[models.User, Security(get_current_user,
 
 
 @router.delete("/me/", status_code=204)
-async def delete_account(db: Annotated[Session, Depends(get_db)],
+async def delete_user(db: Annotated[Session, Depends(get_db)],
                          current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])]):
     service.delete(db, current_user.id)
 
 
 @router.patch("/me/", response_model=UserFull)
-async def update_account(db: Annotated[Session, Depends(get_db)],
+async def update_user(db: Annotated[Session, Depends(get_db)],
                          current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])],
                          updated_user: UserUpdate):
     return service.update(db, user_id=current_user.id, update_scheme=updated_user)

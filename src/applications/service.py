@@ -4,8 +4,8 @@ from src import models
 from src.applications.schemas import ApplicationSearch
 
 
-def get_applications(db: Session,
-                     queryset: ApplicationSearch):
+def get_all(db: Session,
+            queryset: ApplicationSearch):
     query = db.query(models.Application).filter_by(deleted=False)
     if queryset.name:
         query = query.filter(models.Application.name.like(f"%{queryset.name}%"))
@@ -14,3 +14,6 @@ def get_applications(db: Session,
     if queryset.user_id:
         query = query.filter_by(user_id=queryset.user_id)
     return query.all()
+
+def get(db: Session, application_id: int):
+    return db.query(models.Application).filter_by(id=application_id).first()

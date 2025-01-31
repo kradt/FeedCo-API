@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Query, Path
+from fastapi import Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from src.dependencies import get_db
 from src.users.schemas import UserSearch, UserCreate
