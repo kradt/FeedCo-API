@@ -7,14 +7,14 @@ from src.users.schemas import UserSearch, UserCreate
 from src.users import service
 
 
-def get_user_by_id(db: Annotated[Session, Depends(get_db)], user_id: Annotated[str, Path()]):
+async def get_user_by_id(db: Annotated[Session, Depends(get_db)], user_id: Annotated[str, Path()]):
     user = service.get(db, user_id)
     if not user:
         raise HTTPException(404, detail=f"User with id {user_id} is not found")
     return user
 
 
-def create_user(user: UserCreate,
+async def create_user(user: UserCreate,
                 db: Annotated[Session, Depends(get_db)]):
     """
     Create user and save it to base
