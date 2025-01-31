@@ -1,13 +1,9 @@
 from typing import Annotated
 
-
-
-from fastapi import Depends, Query, HTTPException
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src import models
 from src.applications import service
-from src.applications.schemas import ApplicationSearch
 from src.dependencies import get_db
 
 

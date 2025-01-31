@@ -37,6 +37,7 @@ app = FastAPI(
         "url": "https://t.me/robertpustota",
         "email": "kradworkmail@gmail.com"
     },
+    root_path="/api/v1",
     openapi_tags=tags_metadata,
     openapi_url="/docs/" if config.SHOW_DOCUMENTATION else None
 )
