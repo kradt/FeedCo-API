@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src import models
+from src.applications import models
 from src.applications.schemas import ApplicationSearch
 
 

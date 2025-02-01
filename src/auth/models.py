@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import ForeignKey, TypeDecorator, DateTime
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from src import Base
+from src.database.core import Base
 
 
 class TZDateTime(TypeDecorator):

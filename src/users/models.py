@@ -1,6 +1,7 @@
 from sqlalchemy import String, Enum
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from src import pwd_context, Base
+from src import pwd_context
+from src.database.core import Base
 from src.enums import AccountType
 
 

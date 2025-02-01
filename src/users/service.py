@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
-from src import models, pwd_context
+from src import pwd_context
+from src.users import models
 from src.users.schemas import UserUpdate, UserSearch, UserCreate
 
 

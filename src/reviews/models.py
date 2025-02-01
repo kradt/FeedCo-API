@@ -2,7 +2,9 @@ import datetime
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from src import Base
+
+from src.comments.models import Comment
+from src.database.core import Base
 
 
 class Review(Base):

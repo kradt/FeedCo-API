@@ -1,19 +1,10 @@
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src import config, engine, models
+from src import config
 from src.applications import router as applications
 from src.users import router as users
 from src.auth import router as auth
-
-
-@asynccontextmanager
-async def lifespan(app_instance: FastAPI):
-    models.Base.metadata.create_all(bind=engine)
-    yield
-
 
 tags_metadata = [
     {
@@ -30,7 +21,6 @@ tags_metadata = [
     }
 ]
 app = FastAPI(
-    lifespan=lifespan,
     title=config.API_NAME,
     contact={
         "name": "Robert Pustota",

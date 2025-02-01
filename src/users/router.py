@@ -1,15 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Security, Query, Path
+from fastapi import APIRouter, Depends, Security, Query
 from sqlalchemy.orm import Session
 
-from src import models, SessionLocal
+from src.database.core import SessionLocal
+from src.users import models
 from src.applications.schemas import ApplicationFull
 from src.users.dependencies import get_user_by_id, get_db, create_user
 from src.auth.dependencies import get_current_user
 from src.users.schemas import UserFull, UserUpdate, BaseUser, UserSearch
 from src.users import service
-from src.applications import service as application_service
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -27,7 +27,7 @@ async def create_user(user: Annotated[models.User, Depends(create_user)]):
 @router.get("/", response_model=list[UserFull])
 async def get_all_users(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
                         db: Annotated[SessionLocal, Depends(get_db)],
-                        search_pattern: Annotated[Query, UserSearch]):
+                        search_pattern: Annotated[UserSearch, Query()]):
     return service.get_all(db, search_pattern)
 
 

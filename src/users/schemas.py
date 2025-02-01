@@ -1,6 +1,6 @@
 from pydantic import BaseModel, constr, EmailStr
 
-from src.models import AccountType
+from src.enums import AccountType
 
 
 class BaseUser(BaseModel):

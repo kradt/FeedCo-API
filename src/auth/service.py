@@ -4,6 +4,8 @@ import jwt
 from sqlalchemy.orm import Session
 
 from src import models, config
+from src.auth import models
+from src.users import models as user_models
 from src.auth.schemas import TokenSet
 
 
@@ -15,7 +17,7 @@ def authenticate_user(db: Session, username: str, password: str, ):
     :param password: User password
     :return: User from base or None
     """
-    user = db.query(models.User).filter_by(username=username).first()
+    user = db.query(user_models.User).filter_by(username=username).first()
     if user and user.check_password_hash(password):
         return user
 
@@ -54,7 +56,7 @@ def get_refresh_token_by_token_string(db: Session, token):
 def save_refresh_token(
         db: Session,
         refresh_token: str,
-        user: models.User,
+        user: user_models.User,
         refresh_token_expires_days: datetime.timedelta):
     """
     Save refresh token in base
@@ -79,7 +81,7 @@ def save_refresh_token(
     db.commit()
 
 
-def create_token_set(db: Session, user: models.User, scopes: list[str]):
+def create_token_set(db: Session, user: user_models.User, scopes: list[str]):
     """
     Create refresh and access token and return them as pydantic model
     :param scopes: permissions

@@ -11,7 +11,7 @@ class BaseConfig(BaseSettings):
     ACCESS_TOKEN_TYPE: str = "access"
     REFRESH_TOKEN_TYPE: str = "refresh"
     SHOW_DOCUMENTATION: bool = False
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict(env_file="../.env", extra="allow")
 
 
 class DevelopmentConfig(BaseConfig):

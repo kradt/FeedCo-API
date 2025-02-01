@@ -1,10 +1,10 @@
 import datetime
-from enum import Enum as PyEnum
 from sqlalchemy import ForeignKey, String, Enum
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from src import Base
+from src.database.core import Base
 from src.enums import RatingGrade
+from src.reviews.models import Review
 
 
 class Application(Base):
@@ -28,6 +28,8 @@ class Application(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="applications")
 
+    ratings: Mapped[list["Rating"]] = relationship(back_populates="application")
+
 
 class Rating(Base):
     """
@@ -44,3 +46,6 @@ class Rating(Base):
 
     review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"), nullable=True)
     review: Mapped["Review"] = relationship(back_populates="rating")
+
+    application_id: Mapped[int] = mapped_column(ForeignKey("applications.id"))
+    application: Mapped[Application] = relationship(back_populates="ratings")
