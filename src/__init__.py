@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from passlib.context import CryptContext
 
 from src.settings import DevelopmentConfig, ProductionConfig, BaseConfig
@@ -21,6 +21,7 @@ else:
 
 engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
 SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

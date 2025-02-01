@@ -16,7 +16,7 @@ router = APIRouter(prefix="/applications", tags=["Applications"])
 def get_applications(db: Annotated[SessionLocal, Depends(get_db)],
                      search_pattern: Annotated[ApplicationSearch, Query()],
                      current_user: Annotated[models.User, Security(get_current_user, scopes=["applications"])]):
-    return service.get_all(dab, search_pattern)
+    return service.get_all(db, search_pattern)
 
 
 @router.get("/{application_id}", response_model=ApplicationFull)
