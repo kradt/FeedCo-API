@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.applications import models
-from src.applications.schemas import ApplicationSearch
+from src.applications.schemas import ApplicationSearch, ApplicationBase, ApplicationUpdate
 
 
 def get_all(db: Session,
@@ -16,5 +16,35 @@ def get_all(db: Session,
     return query.all()
 
 
+def exists(db: Session, name: str, description: str):
+    app = db.query(models.Application).filter_by(name=name, description=description).all()
+    return bool(app)
+
+
 def get(db: Session, application_id: int):
     return db.query(models.Application).filter_by(id=application_id).first()
+
+
+def create(db: Session, application: ApplicationBase, user_id: int):
+    new_application = models.Application(
+        name=application.name,
+        description=application.description,
+        date_created=application.date_created,
+        hide_reviews=application.hide_reviews,
+        user_id=user_id)
+    db.add(new_application)
+    db.commit()
+    return new_application
+
+
+def update(db: Session, application_data: ApplicationUpdate, application_id: int):
+    application = get(db, application_id)
+    if application_data.name:
+        application.name = application_data.name
+    if application.description:
+        application.description = application_data.description
+    if application_data.hide_reviews:
+        application.hide_reviews = application_data.hide_reviews
+    db.add(application)
+    db.commit()
+    return application

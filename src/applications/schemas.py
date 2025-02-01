@@ -8,8 +8,8 @@ from src.users.schemas import UserFull
 class ApplicationBase(BaseModel):
     name: constr(max_length=100)
     description: constr(min_length=200, max_length=1000)
-    date_created: datetime.datetime
-    hide_reviews: bool
+    date_created: datetime.datetime = datetime.datetime.now()
+    hide_reviews: bool = False
 
 
 class ApplicationFull(ApplicationBase):

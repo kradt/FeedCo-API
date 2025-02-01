@@ -21,9 +21,9 @@ class Application(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(String(1000))
-    date_created: Mapped[datetime.datetime] = mapped_column()
+    date_created: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
     hide_reviews: Mapped[bool] = mapped_column()
-    deleted: Mapped[bool] = mapped_column()
+    deleted: Mapped[bool] = mapped_column(default=False)
     # TODO: adding logo
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="applications")
