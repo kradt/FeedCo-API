@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from src import pwd_context
 from src.users import models
@@ -32,6 +33,11 @@ def get_all(db: Session, queryset: UserSearch):
     if queryset.account_type:
         query = query.filter(models.User.account_type == queryset.account_type)
     return query.all()
+
+
+def exists(db: Session, username, email):
+    user = db.query(models.User).filter(or_(models.User.username==username, models.User.email==email)).all()
+    return bool(user)
 
 
 def get(db: Session, user_id: int) -> models.User:

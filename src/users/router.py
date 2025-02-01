@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.database.core import SessionLocal
 from src.users import models
 from src.applications.schemas import ApplicationFull
-from src.users.dependencies import get_user_by_id, get_db, create_user
+from src.users.dependencies import get_user_by_id, get_db, create_user, update_user
 from src.auth.dependencies import get_current_user
 from src.users.schemas import UserFull, UserUpdate, BaseUser, UserSearch
 from src.users import service
@@ -70,5 +70,5 @@ async def delete_user(
 async def update_user(
         db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])],
-        updated_user: UserUpdate):
+        updated_user: Annotated[models.User, Depends(update_user)]):
     return service.update(db, user_id=current_user.id, update_scheme=updated_user)
