@@ -20,7 +20,15 @@ class Comment(Base):
     review_id: Mapped[int] = mapped_column(ForeignKey("reviews.id"))
     review: Mapped["Review"] = relationship(back_populates="comments")
 
-    votes: Mapped["CommentVotes"] = relationship(back_populates="comment")
+    votes: Mapped[list["CommentVotes"]] = relationship(back_populates="comment")
+
+    @property
+    def votes_positive(self):
+        return len([vote for vote in self.votes if vote.vote_type is True])
+
+    @property
+    def votes_negative(self):
+        return len([vote for vote in self.votes if vote.vote_type is False])
 
 
 class CommentVotes(Base):

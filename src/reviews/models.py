@@ -19,14 +19,22 @@ class Review(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column()
     body: Mapped[str] = mapped_column(String(1000))
-    date_created: Mapped[datetime.datetime] = mapped_column()
+    date_created: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="reviews")
 
     rating: Mapped["Rating"] = relationship(back_populates="review")
-    reviews_votes: Mapped["ReviewVotes"] = relationship(back_populates="review")
-    comments: Mapped["Comment"] = relationship(back_populates="review")
+    reviews_votes: Mapped[list["ReviewVotes"]] = relationship(back_populates="review")
+    comments: Mapped[list["Comment"]] = relationship(back_populates="review")
+
+    @property
+    def votes_positive(self):
+        return len([vote for vote in self.reviews_votes if vote.vote_type is True])
+
+    @property
+    def votes_negative(self):
+        return len([vote for vote in self.reviews_votes if vote.vote_type is False])
 
 
 class ReviewVotes(Base):

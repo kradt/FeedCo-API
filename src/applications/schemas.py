@@ -2,7 +2,23 @@ import datetime
 
 from pydantic import BaseModel, constr
 
+from src.enums import RatingGrade
+from src.reviews.schemas import ReviewFull, ReviewBase
 from src.users.schemas import UserFull
+
+
+class RatingBase(BaseModel):
+    grade: RatingGrade
+
+
+class RatingCreate(RatingBase):
+    user_id: int
+    review: ReviewBase | None = None
+
+
+class RatingFull(RatingBase):
+    id: int
+    review: ReviewFull | None = None
 
 
 class ApplicationBase(BaseModel):
@@ -15,6 +31,7 @@ class ApplicationBase(BaseModel):
 class ApplicationFull(ApplicationBase):
     id: int
     user: UserFull
+    ratings: list[RatingFull]
 
 
 class ApplicationUpdateBase(BaseModel):

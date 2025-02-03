@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from src.applications import models
-from src.applications.schemas import ApplicationSearch, ApplicationBase, ApplicationUpdate
+from src.applications.schemas import ApplicationSearch, ApplicationBase, ApplicationUpdate, RatingCreate
 
 
 def get_all(db: Session,
@@ -48,3 +48,23 @@ def update(db: Session, application_data: ApplicationUpdate, application_id: int
     db.add(application)
     db.commit()
     return application
+
+
+def delete(db: Session, application_id: int):
+    application = get(db, application_id)
+    db.delete(application)
+    db.commit()
+
+
+def rate(db: Session, rating_data: RatingCreate, application_id: int):
+    application = get(db, application_id)
+
+    review = models.Review(title=rating_data.review.title,
+                           user_id=rating_data.user_id,
+                           body=rating_data.review.body) if rating_data.review else None
+    rating = models.Rating(grade=rating_data.grade, user_id=rating_data.user_id)
+    rating.application = application
+    rating.review = review
+    db.add(rating)
+    db.commit()
+    return rating
