@@ -40,6 +40,7 @@ class Rating(Base):
     __tablename__ = "ratings"
     id: Mapped[int] = mapped_column(primary_key=True)
     grade: Mapped[int] = mapped_column(Enum(RatingGrade), default=RatingGrade.grade_5)
+    deleted: Mapped[bool] = mapped_column(default=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="ratings")

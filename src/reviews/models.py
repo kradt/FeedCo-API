@@ -20,7 +20,7 @@ class Review(Base):
     title: Mapped[str] = mapped_column()
     body: Mapped[str] = mapped_column(String(1000))
     date_created: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
-
+    deleted: Mapped[bool] = mapped_column(default=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="reviews")
 

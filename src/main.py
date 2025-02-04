@@ -5,6 +5,9 @@ from src import config
 from src.applications import router as applications
 from src.users import router as users
 from src.auth import router as auth
+from src.reviews import router as reviews
+from src.comments import router as comments
+
 
 tags_metadata = [
     {
@@ -18,8 +21,17 @@ tags_metadata = [
     {
         "name": "Applications",
         "description": "Routes for operations with applications"
+    },
+    {
+        "name": "Reviews",
+        "description": "Routes for operations with reviews"
+    },
+    {
+        "name": "Comments",
+        "description": "Router for operations with comments"
     }
 ]
+
 app = FastAPI(
     title=config.API_NAME,
     contact={
@@ -43,3 +55,5 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(applications.router)
+app.include_router(reviews.router)
+app.include_router(comments.router)

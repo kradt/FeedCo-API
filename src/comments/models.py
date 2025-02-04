@@ -14,6 +14,7 @@ class Comment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column()
 
+    deleted: Mapped[bool] = mapped_column(default=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="comments")
 

@@ -44,6 +44,14 @@ def create_rating(
     return service.rate(db, rating_data, application.id)
 
 
+@router.get("/{application_id}/rating", response_model=list[RatingFull])
+def get_all_ratings_of_application(
+        db: Annotated[SessionLocal, Depends(get_db)],
+        application: Annotated[models.Application, Depends(get_application_by_id)],
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+    return application.ratings
+
+
 @router.patch("/{application_id}", response_model=ApplicationFull)
 def update_application(
         application: Annotated[models.Application, Depends(update_application)]):
