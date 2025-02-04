@@ -15,7 +15,7 @@ from src.users import service as user_service
 from src.auth import service
 
 
-def get_current_user(security_scopes: SecurityScopes,
+async def get_current_user(security_scopes: SecurityScopes,
                      token: Annotated[str, Depends(oauth_scheme)],
                      db: Annotated[Session, Depends(get_db)]):
     """
@@ -56,7 +56,7 @@ def get_current_user(security_scopes: SecurityScopes,
     return user
 
 
-def get_refresh_token(db: Annotated[Session, Depends(get_db)],
+async def get_refresh_token(db: Annotated[Session, Depends(get_db)],
                       refresh_token: Annotated[str | None, Cookie()] = None) -> dict:
     """
     Get refresh token from cookies, decode it and validate

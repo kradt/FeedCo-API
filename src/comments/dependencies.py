@@ -10,7 +10,7 @@ from src.comments import service
 from src.reviews import models
 
 
-def create_comment(
+async def create_comment(
         db: Annotated[Session, Depends(get_db)],
         review: Annotated[models.Review, Depends(get_review_by_id)],
         comment_data: Annotated[CommentCreate, Body()], 
@@ -21,7 +21,7 @@ def create_comment(
     return service.create(db, comment_data, review_id)
 
 
-def get_comment_by_id(
+async def get_comment_by_id(
         db: Annotated[Session, Depends(get_db)],
         comment_id: Annotated[int, Path()]):
     comment = service.get(db, comment_id)
@@ -30,7 +30,7 @@ def get_comment_by_id(
     return comment
 
 
-def vote_comment(
+async def vote_comment(
         db: Annotated[Session, Depends(get_db)],
         comment: Annotated[models.Comment, Depends(get_comment_by_id)],
         votes_data: Annotated[VoteCreate, Body()]):
@@ -40,7 +40,7 @@ def vote_comment(
     return service.vote(db, votes_data, comment.id)
     
 
-def unvote_comment(
+async def unvote_comment(
         db: Annotated[Session, Depends(get_db)],
         comment: Annotated[models.Comment, Depends(get_comment_by_id)],
         votes_data: Annotated[VoteCreate, Body()]):

@@ -10,14 +10,14 @@ from src.users import models as user_models
 from src.auth.dependencies import get_current_user
 
 
-def get_application_by_id(db: Annotated[Session, Depends(get_db)], application_id: int):
+async def get_application_by_id(db: Annotated[Session, Depends(get_db)], application_id: int):
     application = service.get(db, application_id)
     if not application:
         raise HTTPException(404, detail=f"Application with id {application_id} is not exists")
     return application
 
 
-def create_application(db: Annotated[Session, Depends(get_db)],
+async def create_application(db: Annotated[Session, Depends(get_db)],
                        application_data: Annotated[ApplicationBase, Body()],
                        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
     if service.exists(db, application_data.name, application_data.description):
@@ -26,7 +26,7 @@ def create_application(db: Annotated[Session, Depends(get_db)],
     return application
 
 
-def update_application(db: Annotated[Session, Depends(get_db)],
+async def update_application(db: Annotated[Session, Depends(get_db)],
                        application_data: Annotated[ApplicationUpdate, Body()],
                        application_id: Annotated[int, Path()],
                        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):

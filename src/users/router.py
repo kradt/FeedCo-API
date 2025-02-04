@@ -26,7 +26,7 @@ async def create_user(user: Annotated[models.User, Depends(create_user)]):
 
 @router.get("/", response_model=list[UserFull])
 async def get_all_users(current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])],
-                        db: Annotated[SessionLocal, Depends(get_db)],
+                        db: Annotated[Session, Depends(get_db)],
                         search_pattern: Annotated[UserSearch, Query()]):
     return service.get_all(db, search_pattern)
 
@@ -40,14 +40,14 @@ async def get_user(
 
 @router.get("/me/applications/", response_model=list[ApplicationFull])
 async def get_applications_of_current_user(
-        db: Annotated[SessionLocal, Depends(get_db)],
+        db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "applications"])]):
     return current_user.applications
 
 
 @router.get("/{user_id}/applications/", response_model=list[ApplicationFull])
 async def get_applications_of_specific_user(
-        db: Annotated[SessionLocal, Depends(get_db)],
+        db: Annotated[Session, Depends(get_db)],
         current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "applications"])],
         requested_user: Annotated[models.User, Depends(get_user_by_id)]):
     return requested_user.applications
