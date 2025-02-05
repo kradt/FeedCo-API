@@ -12,7 +12,7 @@ def create(db: Session, comment_data: CommentCreate, review_id):
 
 
 def get(db: Session, comment_id: int):
-    return db.query(models.Comment).filter_by(id=comment_id).first()
+    return db.query(models.Comment).filter_by(id=comment_id, deleted=False).first()
 
 
 def update(db: Session, comment_data: CommentBase, comment_id: int):
@@ -21,6 +21,7 @@ def update(db: Session, comment_data: CommentBase, comment_id: int):
         comment.text = comment_data.text
     db.add(comment)
     db.commit()
+    return comment
 
 
 def delete(db: Session, comment_id: int):

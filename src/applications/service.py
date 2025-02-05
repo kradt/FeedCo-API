@@ -41,7 +41,7 @@ def update(db: Session, application_data: ApplicationUpdate, application_id: int
     application = get(db, application_id)
     if application_data.name:
         application.name = application_data.name
-    if application.description:
+    if application_data.description:
         application.description = application_data.description
     if application_data.hide_reviews:
         application.hide_reviews = application_data.hide_reviews

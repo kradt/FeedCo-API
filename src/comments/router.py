@@ -37,7 +37,7 @@ async def update_comment(
     return service.update(db, comment_data, comment.id)
 
 
-@router.post("/{comment_id}/votes", response_model=VoteCreate)
+@router.post("/{comment_id}/votes", response_model=VoteCreate, status_code=201)
 async def create_vote_on_comment(
         vote: Annotated[models.CommentVotes, Depends(vote_comment)],
         current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.database.core import SessionLocal
 from src.users import models
 from src.applications.schemas import ApplicationFull
-from src.users.dependencies import get_user_by_id, get_db, create_user, update_user
+from src.users.dependencies import get_user_by_id, get_db, create_user as create_user_in_db, update_user
 from src.auth.dependencies import get_current_user
 from src.users.schemas import UserFull, UserUpdate, BaseUser, UserSearch
 from src.users import service
@@ -14,8 +14,8 @@ from src.users import service
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.post("/create-user/", response_model=BaseUser)
-async def create_user(user: Annotated[models.User, Depends(create_user)]):
+@router.post("/", response_model=BaseUser, status_code=201)
+async def create_user(user: Annotated[models.User, Depends(create_user_in_db)]):
     """
     Registrate user or raise and error if user already exists
     :param user: created user from base

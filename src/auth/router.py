@@ -45,7 +45,7 @@ async def refresh_tokens(response: Response,
     user = user_service.get(db, decoded_refresh_token.get("user_id"))
     if not user:
         raise HTTPException(status_code=401, detail="Invalid Credentials. User does not exist")
-    token_set = create_token_set(db, user)
+    token_set = create_token_set(db, user, decoded_refresh_token.get("scopes"))
     response.set_cookie(
         key="refresh_token",
         value=token_set.refresh_token,

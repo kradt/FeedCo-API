@@ -28,13 +28,13 @@ async def get_application(
     return application
 
 
-@router.post("/", response_model=ApplicationFull)
+@router.post("/", response_model=ApplicationFull, status_code=201)
 async def create_application(
         application: Annotated[models.Application, Depends(create_application)]):
     return application
 
 
-@router.post("/{application_id}/rating", response_model=RatingFull)
+@router.post("/{application_id}/rating", response_model=RatingFull, status_code=201)
 async def create_rating(
         db: Annotated[Session, Depends(get_db)],
         application: Annotated[models.Application, Depends(get_application_by_id)],
@@ -52,18 +52,13 @@ async def get_all_ratings_of_application(
 
 
 @router.patch("/{application_id}", response_model=ApplicationFull)
-async def update_application(
-        application: Annotated[models.Application, Depends(update_application)]):
-    return application
-
-
-@router.patch("/{application_id}", response_model=ApplicationFull)
-async def update_application(
+async def update_application_route(
         application: Annotated[models.Application, Depends(update_application)]):
     return application
 
 
 @router.delete("/{application_id}", status_code=204)
 async def delete_application(
+        db: Annotated[Session, Depends(get_db)],
         application: Annotated[models.Application, Depends(get_application_by_id)]):
-    service.delete(application.id)
+    service.delete(db, application.id)

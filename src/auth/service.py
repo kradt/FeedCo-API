@@ -74,9 +74,9 @@ def save_refresh_token(
     new_refresh_token = models.RefreshToken(
         token=refresh_token,
         created_at=datetime.datetime.now(datetime.timezone.utc),
-        expires_at=datetime.datetime.now(datetime.timezone.utc) + refresh_token_expires_days
+        expires_at=datetime.datetime.now(datetime.timezone.utc) + refresh_token_expires_days,
+        user_id=user.id
     )
-    new_refresh_token.user = user
     db.add(new_refresh_token)
     db.commit()
 
