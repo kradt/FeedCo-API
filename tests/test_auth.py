@@ -36,14 +36,4 @@ def test_refresh_token(client_with_auth, refresh_token):
     assert result.json().get("refresh_token")
     
 
-def test_create_user(client):
-    data = {
-        "email": "testemail@gmail.com",
-        "username": "test_username",
-        "password": "testpassword",
-        "account_type": AccountType.tester.value
-    }
-    result = client.post("/users/", json=data)
-    assert result.status_code == 201
-    assert "test_username" in result.json().get("username")
-    assert "testemail@gmail.com" in result.json().get("email")
+

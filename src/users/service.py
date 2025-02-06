@@ -41,7 +41,7 @@ def exists(db: Session, username, email):
 
 
 def get(db: Session, user_id: int) -> models.User:
-    return db.query(models.User).filter_by(id=user_id).first()
+    return db.query(models.User).filter_by(id=user_id, deleted=False).first()
 
 
 def delete(db: Session, user_id: int) -> None:

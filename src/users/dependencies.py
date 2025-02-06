@@ -37,7 +37,8 @@ async def update_user(
         current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])]):
     if service.exists(db, user.email, user.username):
         raise HTTPException(status_code=400, detail="User already exists")
-    service.update(db, current_user.id, user)
+    user = service.update(db, current_user.id, user)
+    return user
 
 
 

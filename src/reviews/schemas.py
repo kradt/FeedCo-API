@@ -19,3 +19,8 @@ class ReviewFull(Review):
     comments: list[CommentFull] | None = None
     votes_positive: int
     votes_negative: int
+
+
+class ReviewUpdate(BaseModel):
+    title: str | None = None
+    body: str | None = None
