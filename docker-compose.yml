@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    ports:
+    - "8000:8000"
+    env_file:
+      ".env"
+    depends_on:
+      - database
+      - testing
+    command: >
+      sh -c "alembic -c src/alembic.ini upgrade head && uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  database:
+    image: postgres:17
+    container_name: database
+    restart: always
+    env_file: 
+      - ".env"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  testing:
+    build: .
+    env_file:
+      ".env"
+    depends_on:
+      - database
+    command: >
+      sh -c "PYTHONPATH=$(pwd) pytest"
+
