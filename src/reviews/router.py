@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Security, Body
+from fastapi import APIRouter, Depends, HTTPException, Security, Body
 
 from src.comments.schemas import CommentFull
 from sqlalchemy.orm import Session
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/reviews", tags=["Reviews"])
 @router.get("/{review_id}", response_model=ReviewFull)
 async def get_review_by_id(
         review: Annotated[models.Review, Depends(get_review_by_id)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return review
 
 
@@ -28,7 +28,9 @@ async def update_review(
         db: Annotated[Session, Depends(get_db)],
         review: Annotated[models.Review, Depends(get_review_by_id)],
         review_data: Annotated[ReviewUpdate, Body()],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
+    if review.user_id != current_user.id:
+        raise HTTPException(status_code=401, detail="Review was created by another user")
     return service.update(db, review_data, review.id)
 
 
@@ -36,33 +38,33 @@ async def update_review(
 async def get_review_comments(
         db: Annotated[Session, Depends(get_db)],
         review: Annotated[models.Review, Depends(get_review_by_id)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return review.comments
 
 
 @router.post("/{review_id}/comments", response_model=CommentFull, status_code=201)
 async def create_comment(
         comment: Annotated[models.Comment, Depends(create_comment)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return comment
 
 
 @router.get("/{comment_id}/", response_model=CommentFull)
 async def get_comment_by_id(
     comment: Annotated[CommentFull, Depends(get_comment_by_id)],
-    current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+    current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return comment
 
 
 @router.post("/{review_id}/votes", response_model=VoteCreate, status_code=201)
 async def create_vote_on_review(
         vote: Annotated[models.ReviewVotes, Depends(vote_review)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return vote
 
 
 @router.delete("/{review_id}/votes", status_code=204)
 async def delete_vote_on_review(
         vote: Annotated[None, Depends(unvote_review)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return None

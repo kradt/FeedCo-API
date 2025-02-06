@@ -21,7 +21,7 @@ def exists(db: Session, name: str, description: str):
     return bool(app)
 
 
-def get(db: Session, application_id: int):
+def get(db: Session, application_id: int) -> models.Application:
     return db.query(models.Application).filter_by(id=application_id).first()
 
 

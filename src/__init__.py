@@ -21,6 +21,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 scopes = {
     "me": "Get info about current user",
     "users": "Get info about users",
-    "applications": "Get info about applications"
+    "manage-applications": "Create new Applications and manage them",
+    "test-applications": "Get info about applications, write reviews and comments"
 }
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", scopes=scopes)

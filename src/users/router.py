@@ -35,21 +35,20 @@ async def get_all_users(current_user: Annotated[models.User, Security(get_curren
 async def get_user(
         current_user: Annotated[models.User, Security(get_current_user, scopes=["users"])], 
         requested_user: Annotated[models.User, Depends(get_user_by_id)]):
-    print(current_user)
     return requested_user
 
 
 @router.get("/me/applications/", response_model=list[ApplicationFull])
 async def get_applications_of_current_user(
         db: Annotated[Session, Depends(get_db)],
-        current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "applications"])]):
+        current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "read-applications"])]):
     return current_user.applications
 
 
 @router.get("/{user_id}/applications/", response_model=list[ApplicationFull])
 async def get_applications_of_specific_user(
         db: Annotated[Session, Depends(get_db)],
-        current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "applications"])],
+        current_user: Annotated[models.User, Security(get_current_user, scopes=["users", "read-applications"])],
         requested_user: Annotated[models.User, Depends(get_user_by_id)]):
     return requested_user.applications
 
@@ -70,6 +69,5 @@ async def delete_user(
 @router.patch("/me/", response_model=UserFull)
 async def update_user_route(
         db: Annotated[Session, Depends(get_db)],
-        current_user: Annotated[models.User, Security(get_current_user, scopes=["me"])],
         updated_user: Annotated[models.User, Depends(update_user)]):
     return updated_user

@@ -17,19 +17,19 @@ router = APIRouter(prefix="/applications", tags=["Applications"])
 async def get_applications(
         db: Annotated[Session, Depends(get_db)],
         search_pattern: Annotated[ApplicationSearch, Query()],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return service.get_all(db, search_pattern)
 
 
 @router.get("/{application_id}", response_model=ApplicationFull)
 async def get_application(
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])],
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])],
         application: Annotated[models.Application, Depends(get_application_by_id)]):
     return application
 
 
 @router.post("/", response_model=ApplicationFull, status_code=201)
-async def create_application(
+async def create_application_route(
         application: Annotated[models.Application, Depends(create_application)]):
     return application
 
@@ -39,7 +39,7 @@ async def create_rating(
         db: Annotated[Session, Depends(get_db)],
         application: Annotated[models.Application, Depends(get_application_by_id)],
         rating_data: Annotated[RatingCreate, Body()],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return service.rate(db, rating_data, application.id)
 
 
@@ -47,7 +47,7 @@ async def create_rating(
 async def get_all_ratings_of_application(
         db: Annotated[Session, Depends(get_db)],
         application: Annotated[models.Application, Depends(get_application_by_id)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return application.ratings
 
 

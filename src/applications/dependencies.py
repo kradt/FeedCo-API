@@ -19,7 +19,7 @@ async def get_application_by_id(db: Annotated[Session, Depends(get_db)], applica
 
 async def create_application(db: Annotated[Session, Depends(get_db)],
                        application_data: Annotated[ApplicationBase, Body()],
-                       current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+                       current_user: Annotated[user_models.User, Security(get_current_user, scopes=["manage-applications"])]):
     if service.exists(db, application_data.name, application_data.description):
         raise HTTPException(400, detail="Application with this name and description already exists")
     application = service.create(db, application_data, current_user.id)
@@ -30,10 +30,13 @@ async def update_application(
         db: Annotated[Session, Depends(get_db)],
         application_data: Annotated[ApplicationUpdate, Body()],
         application_id: Annotated[int, Path()],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["manage-applications"])]):
     if service.exists(db, application_data.name, application_data.description):
         raise HTTPException(400, detail="Application with this name and description already exists")
-    if not service.get(db, application_id):
+    application = service.get(db, application_id)
+    if not application:
         raise HTTPException(404, detail=f"Application with id {application_id} does not exist")
+    if application.user_id != current_user.id:
+        raise HTTPException(401, detail="Application was created by another user")
     application = service.update(db, application_data, application_id)
     return application

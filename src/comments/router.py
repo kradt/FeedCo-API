@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Security, Body
+from fastapi import APIRouter, Depends, HTTPException, Security, Body
 
 from src.comments.schemas import CommentBase, CommentFull, VoteCreate
 from sqlalchemy.orm import Session
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/comments", tags=["Comments"])
 @router.get("/{comment_id}", response_model=CommentFull)
 async def get_comment_by_id(
         comment: Annotated[models.Comment, Depends(get_comment_by_id)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return comment
 
 
@@ -24,7 +24,9 @@ async def get_comment_by_id(
 async def delete_comment(
         db: Annotated[Session, Depends(get_db)],
         comment: Annotated[models.Comment, Depends(get_comment_by_id)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
+    if comment.user_id != current_user.id:
+        raise HTTPException(status_code=401, detail="Comment was created by another user")
     service.delete(db, comment.id)
 
 
@@ -33,19 +35,21 @@ async def update_comment(
         db: Annotated[Session, Depends(get_db)],
         comment: Annotated[models.Comment, Depends(get_comment_by_id)],
         comment_data: Annotated[CommentBase, Body()],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
+    if comment.user_id != current_user.id:
+        raise HTTPException(status_code=401, detail="Comment was created by another user")
     return service.update(db, comment_data, comment.id)
 
 
 @router.post("/{comment_id}/votes", response_model=VoteCreate, status_code=201)
 async def create_vote_on_comment(
         vote: Annotated[models.CommentVotes, Depends(vote_comment)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return vote
 
 
 @router.delete("/{comment_id}/votes", status_code=204)
 async def delete_vote_on_comment(
         vote: Annotated[None, Depends(unvote_comment)],
-        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["applications"])]):
+        current_user: Annotated[user_models.User, Security(get_current_user, scopes=["read-applications"])]):
     return None

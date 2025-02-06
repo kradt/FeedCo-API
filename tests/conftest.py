@@ -57,7 +57,7 @@ def client(session):
 
 @pytest.fixture
 def access_token(session, user):
-    token_set = create_token_set(session, user, scopes=["users", "applications", "me"])
+    token_set = create_token_set(session, user, scopes=["users", "manage-applications", "read-applications", "me"])
     return token_set.access_token
 
 
